@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Trang web MyCV</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <header>
+            <div id="signin" class="container-fluid bg-light">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="#">
+                        <img class="logo" src="MyCV (1).png" alt="alt" width="150"/>
+                    </a>
+                    <div class="ml-auto">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="btn btn-white" style="text-decoration: none; color: black" href="login.jsp">Đăng Nhập</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-dark" style="text-decoration: none; color: white" href="register.jsp">Đăng ký</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <section id="job-listings" class="py-4">
+            <div class="container">
+                <h2 class="text-center">Danh sách công việc</h2>
+                <div class="row" id="jobListContainer">
+                    <!-- Công việc sẽ được chèn động tại đây -->
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="bg-dark text-white py-3">
+            <div class="text-center">
+                <p>Trang Tuyển Dụng Việc Làm</p>
+            </div>
+        </footer>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log("DOM loaded, fetching job data...");
+                fetch('indexServlet')
+                        .then(response => {
+                            console.log("Response received:", response);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Job data received:", data);
+                            const jobListContainer = document.getElementById('jobListContainer');
+                            if (data.length === 0) {
+                                console.log("No jobs found");
+                                jobListContainer.innerHTML = "<p>Không có công việc nào được tìm thấy.</p>";
+                            } else {
+                                data.forEach(job => {
+                                    console.log("Processing job:", job);
+                                    const jobCard = document.createElement('div');
+                                    jobCard.className = 'col-md-6 mb-4';
+                                    jobCard.innerHTML = `
+                                       <div class="card">
+                                           <div class="card-body">
+                                               <h5 class="card-title">${job.jobtitle}</h5>
+                                                <p class="card-text">
+                                                   <small class="text-muted">Công ty: ${job.company}</small>
+                                               </p>
+                                                <p class="card-text">
+                                                   <small class="text-muted">Lương: ${job.salary}</small>
+                                               </p>
+                                               <p class="card-text">
+                                                   <small class="text-muted">Địa điểm: ${job.Location}</small>
+                                               </p>
+                                               <a href="login.jsp" class="btn btn-primary">Xem chi tiết</a>
+                                           </div>
+                                       </div>
+                                   `;
+                                    jobListContainer.appendChild(jobCard);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching job data:', error);
+                            const jobListContainer = document.getElementById('jobListContainer');
+                            jobListContainer.innerHTML = "<p>Có lỗi xảy ra khi tải dữ liệu công việc.</p>";
+                        });
+            });
+        </script>
+    </body>
+</html>
